@@ -1,0 +1,13 @@
+services:
+  backend:
+    build: ./backend
+    container_name: realestatemarketplace
+    ports:
+      - "4000:4000"
+
+  frontend:
+    build: ./frontend
+    container_name: realestatemarketplace
+      - "3000:80"
+    depends_on:
+      - backend
