@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken";
-import createError from "../error.js";
+import createError from "./create.error.js";
 
 export const verify = async (req, res, next) => {
     try {
         // Ensure req.cookies is defined
         if (!req.cookies || !req.cookies.token) {
-            return res.status(401).json({ success: false, message: "No token provided." });
+            return next(createError(401, "No token provided."));
         }
         // Access the token from cookies
         const token = req.cookies.token;
@@ -27,11 +27,12 @@ export const verify = async (req, res, next) => {
 };
 export  const isAdmin = (req, res, next) => {
     try {
-        console.log(req.role);
+        console.log(req.role, "👑 Checking admin privileges...");
         // Check if the user's role is "admin"
-        if (req.role !== "admin") {
-            return res.status(403).json({ success: false, message: "Access denied: Admins only." });
-        }
+      if (req.role.toLowerCase() !== "admin") {
+  return next(createError(403, "Access denied"));
+}
+
 
         // Proceed to the next middleware or route handler
         next();

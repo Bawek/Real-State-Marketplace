@@ -35,10 +35,10 @@ router.put("/change-password", verify, changePassword); // Change password
 router.put("/update-profile", verify, updateProfile);   // Update profile (name, email, etc.)
 
 // Admin Routes (Requires Admin Role)
-router.get("/users", verify,isAdmin, get);  // Get all users (admins only can access this)
-router.get("/users", verify, get);  // Get all users (admins only can access this)
-router.delete("/user/:id", verify, isAdmin, remove);       // Delete user by ID
-router.put("/user/:id", verify, isAdmin, update);          // Update user (e.g., promote to admin)
+router.get("/get-all-users", verify,isAdmin, get);  // Get all users (admins only can access this)
+router.get("/get-single-user:id", verify, get);  // get user by ID
+router.delete("/remove:id", verify, isAdmin, remove);       // Delete user by ID
+router.put("/update-role:id", verify, isAdmin, update);          // Update user (e.g., promote to admin)
 
 // Example admin-only route
 router.post("/admin/create-user", verify, isAdmin, async (req, res) => {

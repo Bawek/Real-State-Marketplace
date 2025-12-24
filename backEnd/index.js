@@ -3,8 +3,9 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import commentRouter from "./route/commentRoute.js";
+import roleRouter from "./route/role.route.js";
 import userRouter from "./route/user.route.js";
+import errorHandler from "./middleware/error.handler.js";
 
 // Load environment variables
 dotenv.config();
@@ -29,15 +30,10 @@ app.get("/", (req, res) => {
   res.send("App started");
 });
 app.use("/api/user", userRouter);
-app.use("/api/comment", commentRouter);
+app.use("/api/role", roleRouter);
 
 // Global Error Handling (Consolidated)
-app.use((err, req, res, next) => {
-  console.error(err.stack); // Log the stack trace for debugging
-  const message = err.message || "Unknown server error occurred";
-  const status = err.status || 500; // Default to 500 if no status is set
-  res.status(status).json({ success: false, message, status });
-});
+app.use(errorHandler);
 
 // MongoDB Connection
 const connectDB = async () => {
