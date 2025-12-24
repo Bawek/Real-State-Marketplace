@@ -7,7 +7,8 @@ import createError from '../error.js';
 // Register a new user
 export const register = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, role } = req.body;
+        console.log(req.file,"file not found");
 
         // Ensure all required fields are provided
         if (!name || !email || !password) {
@@ -23,8 +24,9 @@ export const register = async (req, res) => {
         // Hash the password before saving it
         const hashedPassword = await bcrypt.hash(password, 12);
 
+        
         // Create new user
-        const newUser = new userModel({ name, email, password: hashedPassword });
+        const newUser = new userModel({ name, email, password: hashedPassword,role,photo: req.file ? req.file.filename : undefined });
         await newUser.save();
 
         // Generate a JWT token for the user
@@ -38,7 +40,7 @@ export const register = async (req, res) => {
             maxAge: 24 * 60 * 60 * 1000, // 24 hours expiration
         });
 
-        return res.status(201).json({ success: true, message: "User registered successfully." });
+        return res.status(201).json({ success: true, message: "User registered successfully.",newUser });
     } catch (err) {
         console.error("Error registering user:", err);
         res.status(500).json({ success: false, message: "An error occurred while registering the user." });
@@ -149,7 +151,7 @@ export const changePassword = async (req, res) => {
 
 // Update profile (change name, email, or password)
 export const updateProfile = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password,role } = req.body;
 
     try {
         const user = await userModel.findById(req.user.id); // `req.user.id` comes from the token
@@ -160,11 +162,16 @@ export const updateProfile = async (req, res) => {
 
         if (name) user.name = name;
         if (email) user.email = email;
+        if (role) {
+            user.role=role;
+        }
         if (password) {
             // Hash the new password if it's being changed
             user.password = await bcrypt.hash(password, 12);
         }
-
+if (req.file) {
+            user.photo = req.file.filename || user.photo;
+        }
         await user.save();
 
         res.status(200).json({ success: true, message: "Profile updated successfully.", user });
