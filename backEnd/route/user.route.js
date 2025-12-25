@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login, get, remove, update, changePassword, updateProfile, logout } from "../controllers/user.controller.js";
+import { register, login, get, remove, update, changePassword, updateProfile, logout, getUserByID } from "../controllers/user.controller.js";
 import  {verify, isAdmin} from "../middleware/auth.js";  // Import verify and admin middlewares
 import upload from "../Config/db/multer.js";
 
@@ -36,22 +36,11 @@ router.put("/update-profile", verify, updateProfile);   // Update profile (name,
 
 // Admin Routes (Requires Admin Role)
 router.get("/get-all-users", verify,isAdmin, get);  // Get all users (admins only can access this)
-router.get("/get-single-user:id", verify, get);  // get user by ID
+router.get("/get-single-user:id", verify, getUserByID);  // get user by ID
 router.delete("/remove:id", verify, isAdmin, remove);       // Delete user by ID
 router.put("/update-role:id", verify, isAdmin, update);          // Update user (e.g., promote to admin)
 
-// Example admin-only route
-router.post("/admin/create-user", verify, isAdmin, async (req, res) => {
-    // Admin-only route to create a new user
-    const { name, email, password } = req.body;
 
-    try {
-        const newUser = await User.create({ name, email, password });
-        res.status(201).json({ success: true, message: "User created successfully.", data: newUser });
-    } catch (err) {
-        console.error("Error creating user:", err);
-        res.status(500).json({ success: false, message: "Error creating user." });
-    }
-});
+
 
 export default router;

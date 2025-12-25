@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { decode } from "jsonwebtoken";
 import createError from "./create.error.js";
 
 export const verify = async (req, res, next) => {
@@ -11,27 +11,25 @@ export const verify = async (req, res, next) => {
         const token = req.cookies.token;
 
         // Verify the token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET,(err,user)=>{
-            if(err){
-                return res.status(401).json(createError(400,"Eror in token"));
-            }
-            req.user=user.id
-        });
-    
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        req.user = decoded
+        console.log(req.user.role, "🔐 Token verified successfully:", decoded);
+
+
         next();
     } catch (error) {
         console.error("Token Verification Error:", error);
-        
-        res.status(400).json({ success: false, message: "Token verification failed.", error});
+
+        res.status(400).json({ success: false, message: "Token verification failed.", error });
     }
 };
-export  const isAdmin = (req, res, next) => {
+export const isAdmin = (req, res, next) => {
     try {
-        console.log(req.role, "👑 Checking admin privileges...");
+        console.log(req.user.role, "👑 Checking admin privileges...");
         // Check if the user's role is "admin"
-      if (req.role.toLowerCase() !== "admin") {
-  return next(createError(403, "Access denied"));
-}
+        if (req.user.role?.toLowerCase() !== "admin") {
+            return next(createError(403, "Access denied"));
+        }
 
 
         // Proceed to the next middleware or route handler

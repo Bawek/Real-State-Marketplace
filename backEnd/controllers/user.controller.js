@@ -28,15 +28,8 @@ export const register = async (req, res, next) => {
         await newUser.save();
 
         // Generate a JWT token for the user
-        const token = generateToken({ id: newUser._id, role: newUser.role });
 
-        // Send the token as a cookie
-        res.cookie("token", token, {
-            httpOnly: true,
-            sameSite: "strict",
-            secure: process.env.NODE_ENV === "production", // Use HTTPS in production
-            maxAge: 24 * 60 * 60 * 1000, // 24 hours expiration
-        });
+       
 
         return res.status(201).json({ success: true, message: "User registered successfully.", newUser });
     } catch (err) {
@@ -46,7 +39,7 @@ export const register = async (req, res, next) => {
 };
 
 // Login an existing user
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
@@ -56,7 +49,7 @@ export const login = async (req, res) => {
         }
 
         // Find the user by email
-        const user = await userModel.findOne({ email });
+        const user = await userModel.findOne({ email }).populate("role");
         if (!user) {
             return next(createError(404, "User not found."))
         }
@@ -68,7 +61,9 @@ export const login = async (req, res) => {
         }
 
         // Generate a JWT token
-        const token = generateToken({ id: user._id, role: user.role });
+        console.log(user._id, user.role.name, "Generating token for user:");
+        const token = generateToken({ id: user._id, role: user.role.name });
+        console.log(token, "Generated Token");
 
         // Send the token as a cookie
         res.cookie("token", token, {
@@ -92,7 +87,7 @@ export const login = async (req, res) => {
 };
 
 // Logout user
-export const logout = async (req, res) => {
+export const logout = async (req, res, next) => {
     try {
         // Clear the token cookie
         res.clearCookie("token", {
@@ -110,7 +105,7 @@ export const logout = async (req, res) => {
 
 // Change password
 // Change password
-export const changePassword = async (req, res) => {
+export const changePassword = async (req, res, next) => {
     const { currentPassword, newPassword } = req.body;
     console.log(req.user, "user");
     console.log(req.user.id, "user");
@@ -149,7 +144,7 @@ export const changePassword = async (req, res) => {
 };
 
 // Update profile (change name, email, or password)
-export const updateProfile = async (req, res) => {
+export const updateProfile = async (req, res, next) => {
     const { name, email, password, role } = req.body;
 
     try {
@@ -181,9 +176,9 @@ export const updateProfile = async (req, res) => {
 };
 
 // Get all users (Admin only)
-export const get = async (req, res) => {
+export const get = async (req, res, next) => {
     try {
-        const users = await userModel.find({});
+        const users = await userModel.find({}).populate("role");
         if (users && users.length > 0) {
             res.status(200).json({
                 success: true,
@@ -203,7 +198,7 @@ export const get = async (req, res) => {
 };
 
 // Remove a user by ID (Admin only)
-export const remove = async (req, res) => {
+export const remove = async (req, res, next) => {
     try {
         const { id } = req.params;
 
@@ -224,7 +219,7 @@ export const remove = async (req, res) => {
 };
 
 // Update a user by ID (Admin only) - can be used to promote to admin or change user role
-export const update = async (req, res) => {
+export const update = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { role } = req.body;
@@ -248,3 +243,17 @@ export const update = async (req, res) => {
         res.status(500).json({ success: false, message: "An error occurred while updating the user.", error });
     }
 };
+export const getUserByID=async(req,res,next)=>{
+    try {
+        const {id}=req.params;
+        const user=await userModel.findById(id).populate("role");
+        if (user){
+            res.status(200).json({success:true,message:"user fetched successfully",user});
+        }
+        else{
+            return next(createError(404,"User not found"));
+        }
+    } catch (error) {
+        next(error);
+    }
+}
