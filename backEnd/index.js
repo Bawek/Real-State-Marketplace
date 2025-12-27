@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 import roleRouter from "./route/role.route.js";
 import userRouter from "./route/user.route.js";
 import errorHandler from "./middleware/error.handler.js";
-
+import { connectDB } from "./config/db.js";
 // Load environment variables
 dotenv.config();
 
@@ -29,36 +29,27 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
   res.send("App started");
 });
-app.use("/api/user", userRouter);
-app.use("/api/role", roleRouter);
 
 // Global Error Handling (Consolidated)
 app.use(errorHandler);
 
 // MongoDB Connection
-const connectDB = async () => {
-  let retries = 5; // Retry logic
-  while (retries) {
-    try {
-      await mongoose.connect(url);
-      console.log(`Connected to MongoDB at ${url}`);
-      break;
-    } catch (error) {
-      console.error("Failed to connect to MongoDB, retrying...", error.message);
-      retries -= 1;
-      if (retries === 0) {
-        process.exit(1); // Exit after retry attempts are exhausted
-      }
-      await new Promise(res => setTimeout(res, 5000)); // Retry after 5 seconds
-    }
-  }
-};
-
-// Start the Server
 app.listen(port, async () => {
   console.log(`Server is running on http://localhost:${port}`);
   await connectDB();
 });
+try {
+  connectDB()
+} catch (error) {
+  next(error);
+}
+app.use("/api/user", userRouter);
+app.use("/api/role", roleRouter);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/message', messageRoutes);
+app.use('/api/property', propertyRoutes);
+
+// Start the Server
 
 // Graceful Shutdown: Catch signals for cleanup
 process.on("SIGINT", async () => {
