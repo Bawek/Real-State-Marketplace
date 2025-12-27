@@ -1,7 +1,7 @@
 import express from "express";
 import { register, login, get, remove, update, changePassword, updateProfile, logout, getUserByID } from "../controllers/user.controller.js";
 import  {verify, isAdmin} from "../middleware/auth.js";  // Import verify and admin middlewares
-import upload from "../Config/db/multer.js";
+import upload from "../Config/multer.js";
 
 const router = express.Router();
 

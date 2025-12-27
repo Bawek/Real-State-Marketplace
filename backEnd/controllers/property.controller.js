@@ -1,4 +1,4 @@
-const Property = require('../model/property.model');
+const Property = require('../model/property.model.js');
 
 // Create a new property
 exports.createProperty = async (req, res) => {

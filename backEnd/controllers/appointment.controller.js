@@ -1,4 +1,4 @@
-const Appointment = require('../model/appointment.model');
+const Appointment = require('../model/appointment.model.js');
 
 // Create a new appointment
 exports.createAppointment = async (req, res) => {

@@ -5,8 +5,10 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import roleRouter from "./route/role.route.js";
 import userRouter from "./route/user.route.js";
+import messageRouter from "./route/message.routes.js";
+import PropertyRouter from "./route/property.routes.js";
 import errorHandler from "./middleware/error.handler.js";
-import { connectDB } from "./config/db.js";
+import  connectDB   from "./config/db.js";
 // Load environment variables
 dotenv.config();
 
@@ -45,9 +47,8 @@ try {
 }
 app.use("/api/user", userRouter);
 app.use("/api/role", roleRouter);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/message', messageRoutes);
-app.use('/api/property', propertyRoutes);
+app.use('/api/message', messageRouter);
+app.use('/api/property', PropertyRouter);
 
 // Start the Server
 

@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const connectDB = async () => {
   let retries = 5; // Retry logic
   while (retries) {
@@ -15,3 +17,4 @@ const connectDB = async () => {
     }
   }
 };
+export default connectDB;
