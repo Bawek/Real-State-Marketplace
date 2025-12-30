@@ -1,0 +1,10 @@
+import express from 'express';
+import { createRole, deleteRole, getAllRoles, getRoleById, updateRole } from '../controllers/role.controller.js';
+import { isAdmin, verify } from '../middleware/auth.js';
+const router=express.Router();
+router.post('/create-role', createRole);
+router.put('/update-role/:id',updateRole);
+router.get('/get-all-roles',getAllRoles);
+router.get('/get-roles/:id',verify, isAdmin,getRoleById);
+router.delete('/delete-role/:id',deleteRole);
+export default router;

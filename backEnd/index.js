@@ -3,15 +3,18 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import commentRouter from "./route/commentRoute.js";
+import roleRouter from "./route/role.route.js";
 import userRouter from "./route/user.route.js";
-
+import messageRouter from "./route/message.routes.js";
+import PropertyRouter from "./route/property.routes.js";
+import errorHandler from "./middleware/error.handler.js";
+import  connectDB   from "./config/db.js";
 // Load environment variables
 dotenv.config();
 
 // Initialize Express app
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 const url = process.env.MONGO_URL;
 
 // Middleware
@@ -28,41 +31,26 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
   res.send("App started");
 });
-app.use("/api/user", userRouter);
-app.use("/api/comment", commentRouter);
 
 // Global Error Handling (Consolidated)
-app.use((err, req, res, next) => {
-  console.error(err.stack); // Log the stack trace for debugging
-  const message = err.message || "Unknown server error occurred";
-  const status = err.status || 500; // Default to 500 if no status is set
-  res.status(status).json({ success: false, message, status });
-});
+app.use(errorHandler);
 
 // MongoDB Connection
-const connectDB = async () => {
-  let retries = 5; // Retry logic
-  while (retries) {
-    try {
-      await mongoose.connect(url);
-      console.log(`Connected to MongoDB at ${url}`);
-      break;
-    } catch (error) {
-      console.error("Failed to connect to MongoDB, retrying...", error.message);
-      retries -= 1;
-      if (retries === 0) {
-        process.exit(1); // Exit after retry attempts are exhausted
-      }
-      await new Promise(res => setTimeout(res, 5000)); // Retry after 5 seconds
-    }
-  }
-};
-
-// Start the Server
 app.listen(port, async () => {
   console.log(`Server is running on http://localhost:${port}`);
   await connectDB();
 });
+try {
+  connectDB()
+} catch (error) {
+  next(error);
+}
+app.use("/api/user", userRouter);
+app.use("/api/role", roleRouter);
+app.use('/api/message', messageRouter);
+app.use('/api/property', PropertyRouter);
+
+// Start the Server
 
 // Graceful Shutdown: Catch signals for cleanup
 process.on("SIGINT", async () => {

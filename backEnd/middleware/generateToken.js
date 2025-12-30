@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const generateToken = (id,role) => {
+const generateToken = (payload) => {
     // Ensure the JWT secret is provided
   
     if (!process.env.JWT_SECRET) {
@@ -8,7 +8,7 @@ const generateToken = (id,role) => {
     }
 
     // Generate a token with an expiration time
-    return jwt.sign({ id,role }, process.env.JWT_SECRET);
+    return jwt.sign(payload, process.env.JWT_SECRET);
 };
 
 export default generateToken;
