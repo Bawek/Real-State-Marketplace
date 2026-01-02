@@ -5,25 +5,29 @@ import About from './pages/About';
 import Policy from './pages/Policy';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Login from './pages/Login';
-import ContactUs from './pages/ContactUs';
-import SinglePage from './pages/SinglePage';
-import Register from './pages/Register';
-import AdminLayout from './pages/Admin/AdminLayout';
-import Dashboard from './pages/Admin/Dashboard';
-import { ManageItem } from './pages/Admin/ManageItem';
-import User from './pages/Admin/User';
-import ProtectedRoute from './components/ProtectedRoute';
-import UpdateBlog from './pages/UpdateBlog';
+import PropertyDetails from './pages/properties/PropertyDetails';
+import CreateProperty from './pages/properties/CreateProperty';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+import UserDashboard from './pages/dashboard/UserDashboard';
 
 function App() {
   return (
-    <div className=" min-h-screen w-full flex flex-col shadow-lg  bg-blue-500 ">
+    <div className="min-h-screen w-full flex flex-col">
       {/* Navbar Section */}
+      <Navbar />
+      
       {/* Main Content */}
-      <main className="flex-grow  min-h-screen w-full  ">
+      <main className="flex-grow">
         <Routes>
-         <Route path="/*"  element={<Navbar />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/property/:id" element={<PropertyDetails />} />
+          <Route path="/properties/create" element={<CreateProperty />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<UserDashboard />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/policy" element={<Policy />} />
         </Routes>
       </main>
 
