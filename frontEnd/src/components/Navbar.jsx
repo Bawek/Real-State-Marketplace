@@ -1,281 +1,259 @@
 
 import React, { useState } from "react";
-import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   FaBars,
   FaTimes,
   FaHome,
   FaUserCircle,
-  FaUpload,
-  FaSearch,
-  FaBell,
-  FaYoutube,
-  FaVideo,
-  FaListAlt,
-  FaThumbsUp,
-  FaCommentDots,
-  FaTv,
-  FaPlayCircle,
+  FaBuilding,
+  FaEnvelope,
+  FaCalendarAlt,
+  FaCog,
+  FaSignOutAlt,
 } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
-import { logOut } from "../redux/features/auth/authSlice";
-import { useLogOutUserMutation } from "../redux/features/auth/authApi";
-import Home from "../pages/Home";
-import About from "../pages/About";
-import Policy from "../pages/Policy";
-import AddBlogForm from "../pages/AddBlogForm";
-import Login from "../pages/Login";
-import Register from "../pages/Register";
-import ContactUs from "../pages/ContactUs";
-import SinglePage from "../pages/SinglePage";
-import ProtectedRoute from "./ProtectedRoute";
-import AdminLayout from "../pages/Admin/AdminLayout";
-import Dashboard from "../pages/Admin/Dashboard";
-import { ManageItem } from "../pages/Admin/ManageItem";
-import User from "../pages/Admin/User";
-import UpdateBlog from "../pages/UpdateBlog";
+import { useSelector } from "react-redux";
+import { selectUser, selectIsAuthenticated } from "../redux/features/auth/authSlice";
+import { useLogoutMutation } from "../api/userApi";
+import { addNotification } from "../redux/features/ui/uiSlice";
 
 const Navbar = () => {
-  const [logOutUser] = useLogOutUserMutation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar toggle
-  const { user } = useSelector((state) => state.auth); // Fetch user from auth slice
-  const dispatch = useDispatch();
+  const [logoutMutation] = useLogoutMutation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const user = useSelector(selectUser);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   const navigate = useNavigate();
-  const [isLoggingOut, setIsLoggingOut] = useState(false); // Loading state for logout
 
-  // Handle user logout
   const handleLogout = async () => {
     try {
-      const response = await logOutUser().unwrap();
-      dispatch(logOut());
+      await logoutMutation().unwrap();
+      addNotification({
+        type: 'success',
+        title: 'Logged Out',
+        message: 'You have been successfully logged out.',
+      });
       navigate("/login");
     } catch (error) {
-      console.error("Logout error:", error);
-      alert("Failed to log out.");
+      addNotification({
+        type: 'error',
+        title: 'Logout Failed',
+        message: 'Failed to logout. Please try again.',
+      });
     }
   };
 
+  const navItems = [
+    { to: "/", icon: FaHome, label: "Home" },
+    { to: "/properties", icon: FaBuilding, label: "Properties" },
+    { to: "/messages", icon: FaEnvelope, label: "Messages" },
+    { to: "/appointments", icon: FaCalendarAlt, label: "Appointments" },
+  ];
+
   return (
-    <div className="flex m-0 min-w-full min-h-screen">
-      {/* Left Sidebar */}
+    <>
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
       <div
-        className={` text-white w-64 min-h-screen fixed md:static ${
-          isSidebarOpen ? "block" : "hidden md:block "
-        }`}
+        className={`
+          fixed top-0 left-0 z-50 w-64 h-full bg-white shadow-lg transform transition-transform duration-300 ease-in-out
+          lg:translate-x-0 lg:static lg:h-auto
+          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}
       >
-        <div className="flex items-center justify-between p-4">
-          <NavLink to="/" className="flex items-center space-x-2 text-2xl">
-            <FaBars className="text-3xl text-red-600" />
-          </NavLink>
+        <div className="flex items-center justify-between p-4 border-b">
+          <h2 className="text-xl font-bold text-gray-900">Real Estate</h2>
           <button
-            className="text-white md:hidden"
+            className="lg:hidden"
             onClick={() => setIsSidebarOpen(false)}
           >
-            <FaTimes />
+            <FaTimes className="text-gray-600" />
           </button>
         </div>
-        <nav className="px-4">
-          <ul>
-            <li>
-              <NavLink
-                to="/"
-                className="flex items-center p-3 hover:bg-gray-700 rounded-md"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaHome className="mr-3" />
-                <p
-                  className={`          isSidebarOpen ? "block" : "hidden  "
-`}
-                >Home</p>{" "}
-                
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/privacy"
-                className="flex items-center p-3 hover:bg-gray-700 rounded-md"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaListAlt
-                  className="mr-3"
-                  onClick={() => setIsSidebarOpen(false)}
-                />
-                Privacy
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/trending"
-                className="flex items-center p-3 hover:bg-gray-700 rounded-md"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaTv className="mr-3" />
-                Trending
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/subscriptions"
-                className="flex items-center p-3 hover:bg-gray-700 rounded-md"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaPlayCircle className="mr-3" />
-                Subscriptions
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/library"
-                className="flex items-center p-3 hover:bg-gray-700 rounded-md"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaListAlt className="mr-3" />
-                Library
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/history"
-                className="flex items-center p-3 hover:bg-gray-700 rounded-md"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaThumbsUp className="mr-3" />
-                History
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/yourvideos"
-                className="flex items-center p-3 hover:bg-gray-700 rounded-md"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaVideo className="mr-3" />
-                Your Videos
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/comments"
-                className="flex items-center p-3 hover:bg-gray-700 rounded-md"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaCommentDots className="mr-3" />
-                Comments
-              </NavLink>
-            </li>
-            <li>
-              {user ? (
-                user.role === "user" ? (
-                  <button
-                    className="w-full text-left p-3 hover:bg-gray-700 rounded-md"
-                    onClick={handleLogout}
-                  >
-                    {isLoggingOut ? "Logging out..." : "Logout"}
-                  </button>
-                ) : (
-                  <button
-                    className="w-full text-left p-3 hover:bg-gray-700 rounded-md"
-                    onClick={() => navigate("/dashboard")}
-                  >
-                    Dashboard
-                  </button>
-                )
-              ) : (
+
+        <nav className="p-4">
+          <ul className="space-y-2">
+            {navItems.map((item) => (
+              <li key={item.to}>
                 <NavLink
-                  to="/login"
-                  className="w-full text-left p-3 hover:bg-gray-700 rounded-md"
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `flex items-center p-3 rounded-lg transition-colors ${
+                      isActive
+                        ? 'bg-blue-100 text-blue-600'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`
+                  }
                   onClick={() => setIsSidebarOpen(false)}
                 >
+                  <item.icon className="mr-3" />
+                  {item.label}
+                </NavLink>
+              </li>
+            ))}
+
+            {isAuthenticated && (
+              <>
+                <li>
+                  <NavLink
+                    to="/dashboard"
+                    className={({ isActive }) =>
+                      `flex items-center p-3 rounded-lg transition-colors ${
+                        isActive
+                          ? 'bg-blue-100 text-blue-600'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`
+                    }
+                    onClick={() => setIsSidebarOpen(false)}
+                  >
+                    <FaUserCircle className="mr-3" />
+                    Dashboard
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/profile"
+                    className={({ isActive }) =>
+                      `flex items-center p-3 rounded-lg transition-colors ${
+                        isActive
+                          ? 'bg-blue-100 text-blue-600'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`
+                    }
+                    onClick={() => setIsSidebarOpen(false)}
+                  >
+                    <FaCog className="mr-3" />
+                    Profile
+                  </NavLink>
+                </li>
+
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center p-3 text-left text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    <FaSignOutAlt className="mr-3" />
+                    Logout
+                  </button>
+                </li>
+              </>
+            )}
+
+            {!isAuthenticated && (
+              <li>
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) =>
+                    `flex items-center p-3 rounded-lg transition-colors ${
+                      isActive
+                        ? 'bg-blue-100 text-blue-600'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`
+                  }
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  <FaUserCircle className="mr-3" />
                   Login
                 </NavLink>
-              )}
-            </li>
+              </li>
+            )}
           </ul>
         </nav>
       </div>
 
-      {/* Main Navbar */}
-      <div className="min-w-[calc(100vw-16rem)] shadow-lg flex-1 max-h-20min-h-screen">
-        <nav className=" shadow-2xl  flex-1 min-h-20">
-          <div className="container mx-auto flex justify-between items-center py-3 px-6">
-            {/* Logo Section (YouTube-like) */}
-            <div className="flex items-center space-x-2">
-              <FaBars
-                className="text-2xl text-gray-700 md:hidden"
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              />
-              <NavLink to="/" className="flex items-center space-x-2 text-2xl">
-                <FaYoutube className="text-3xl text-red-600" />
-                <span className="text-2xl font-bold">YouTube</span>
-              </NavLink>
-            </div>
+      {/* Top Navigation Bar */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Mobile menu button */}
+            <button
+              className="lg:hidden"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            >
+              <FaBars className="text-gray-600" />
+            </button>
 
-            {/* Search bar (YouTube-like search box) */}
-            <div className="hidden md:flex flex-1 mx-4">
-              <input
-                type="text"
-                placeholder="Search"
-                className="w-full py-2 px-4 border border-gray-300 rounded-l-full"
-              />
-              <button className="px-4 py-2 bg-gray-200 rounded-r-full text-gray-700 hover:bg-gray-300">
-                <FaSearch />
-              </button>
-            </div>
+            {/* Logo */}
+            <NavLink to="/" className="flex items-center">
+              <FaBuilding className="text-2xl text-blue-600 mr-2" />
+              <span className="text-xl font-bold text-gray-900">EstateHub</span>
+            </NavLink>
 
-            {/* Navbar Icons (Desktop) */}
-            <div className="hidden md:flex space-x-6 text-lg font-medium">
-              {/* Notification Bell */}
-              <FaBell className="text-xl cursor-pointer hover:text-blue-600" />
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex space-x-8">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                      isActive
+                        ? 'bg-blue-100 text-blue-600'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`
+                  }
+                >
+                  <item.icon className="mr-2" />
+                  {item.label}
+                </NavLink>
+              ))}
+            </nav>
 
-              {/* Upload Button */}
-              <NavLink to="/upload" className="text-xl hover:text-blue-600">
-                <FaUpload />
-              </NavLink>
-
-              {/* User Profile Icon */}
-              {user ? (
-                <FaUserCircle className="text-2xl cursor-pointer text-gray-700" />
+            {/* User Menu */}
+            <div className="flex items-center space-x-4">
+              {isAuthenticated ? (
+                <div className="relative group">
+                  <button className="flex items-center space-x-2 text-gray-700 hover:text-gray-900">
+                    <FaUserCircle className="text-xl" />
+                    <span className="hidden md:block text-sm font-medium">
+                      {user?.name?.split(' ')[0]}
+                    </span>
+                  </button>
+                  
+                  {/* Dropdown Menu */}
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div className="py-1">
+                      <NavLink
+                        to="/dashboard"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Dashboard
+                      </NavLink>
+                      <NavLink
+                        to="/profile"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Profile
+                      </NavLink>
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <NavLink
                   to="/login"
-                  className="text-lg text-gray-700 hover:text-blue-600"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
                 >
-                  Login
+                  Sign In
                 </NavLink>
               )}
             </div>
           </div>
-        </nav>
-        <div className=" shadow-black max-w-[cal(100vw-16rem)] min-h-[cal(100vh - 5rem)]">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/policy" element={<Policy />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/contact" element={<ContactUs />} />
-            <Route path="/upload" element={<AddBlogForm />} />
-            <Route path="/blogs/:id" element={<SinglePage />} />
-
-            {/* Admin Dashboard Routes */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <AdminLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<Dashboard />} />
-              <Route path="addnewpost" element={<AddBlogForm />} />
-              <Route path="manageitem" element={<ManageItem />} />
-              <Route path="manageuser" element={<User />} />
-              <Route path="manageitem/:id" element={<UpdateBlog />} />
-            </Route>
-          </Routes>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import './App.css';
+import './index.css';
 import Home from './pages/Home';
 import About from './pages/About';
 import Policy from './pages/Policy';
@@ -10,10 +11,15 @@ import CreateProperty from './pages/properties/CreateProperty';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import UserDashboard from './pages/dashboard/UserDashboard';
+import Notification from './components/Notification';
+import DemoBanner from './components/common/DemoBanner';
 
 function App() {
   return (
     <div className="min-h-screen w-full flex flex-col">
+      {/* Demo Banner */}
+      <DemoBanner />
+      
       {/* Navbar Section */}
       <Navbar />
       
@@ -33,6 +39,9 @@ function App() {
 
       {/* Footer Section */}
       <Footer />
+      
+      {/* Global Notifications */}
+      <Notification />
     </div>
   );
 }

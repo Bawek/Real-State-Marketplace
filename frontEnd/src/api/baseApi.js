@@ -18,3 +18,6 @@ export const baseApi = createApi({
   tagTypes: ['User', 'Property', 'Message', 'Role', 'Appointment'],
   endpoints: () => ({}),
 });
+
+// Export baseQuery for other APIs to use
+export { baseQuery };

@@ -1,9 +1,118 @@
-import { createApi } from '@reduxjs/toolkit/query/react';
-import { baseQuery } from './baseApi';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { mockAppointments } from '../utils/mockData';
+
+// Check if backend is available
+const isBackendAvailable = async () => {
+  try {
+    const response = await fetch('http://localhost:5000/api/appointment');
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+};
+
+// Mock base query for when backend is not available
+const mockBaseQuery = async (args) => {
+  await new Promise(resolve => setTimeout(resolve, 600)); // Simulate network delay
+  
+  if (args.url === '/appointment' || args.url.startsWith('/appointment?')) {
+    return {
+      data: {
+        appointments: mockAppointments,
+        currentPage: 1,
+        totalPages: 1,
+        totalAppointments: mockAppointments.length
+      }
+    };
+  }
+  
+  if (args.url.startsWith('/appointment/user/')) {
+    const userId = args.url.split('/appointment/user/')[1];
+    const userAppointments = mockAppointments.filter(apt => 
+      apt.propertyId && apt.propertyId._id // Mock user appointments
+    );
+    
+    return {
+      data: {
+        appointments: userAppointments,
+        currentPage: 1,
+        totalPages: 1,
+        totalAppointments: userAppointments.length
+      }
+    };
+  }
+  
+  if (args.url.startsWith('/appointment/') && args.method === 'GET') {
+    const id = args.url.split('/')[2];
+    const appointment = mockAppointments.find(a => a._id === id);
+    
+    if (appointment) {
+      return { data: appointment };
+    } else {
+      return { error: { status: 404, data: { message: 'Appointment not found' } } };
+    }
+  }
+  
+  if (args.url === '/appointment' && args.method === 'POST') {
+    return {
+      data: {
+        _id: 'new' + Date.now(),
+        ...args.body,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      }
+    };
+  }
+  
+  if (args.url.startsWith('/appointment/') && args.method === 'PUT') {
+    const id = args.url.split('/')[2];
+    return {
+      data: {
+        _id: id,
+        ...args.body,
+        updatedAt: new Date().toISOString()
+      }
+    };
+  }
+  
+  if (args.url.startsWith('/appointment/') && args.method === 'DELETE') {
+    return { data: { message: 'Appointment deleted successfully' } };
+  }
+  
+  if (args.url.includes('/confirm') || args.url.includes('/cancel')) {
+    const id = args.url.split('/')[2];
+    return {
+      data: {
+        _id: id,
+        status: args.url.includes('/confirm') ? 'confirmed' : 'cancelled',
+        updatedAt: new Date().toISOString()
+      }
+    };
+  }
+  
+  return { error: { status: 404, data: { message: 'Endpoint not found' } } };
+};
 
 export const appointmentApi = createApi({
   reducerPath: 'appointmentApi',
-  baseQuery,
+  baseQuery: async (args, api, extraOptions) => {
+    const backendAvailable = await isBackendAvailable();
+    
+    if (backendAvailable) {
+      return fetchBaseQuery({
+        baseUrl: 'http://localhost:5000/api',
+        prepareHeaders: (headers, { getState }) => {
+          const token = getState().auth?.user?.token;
+          if (token) {
+            headers.set('authorization', `Bearer ${token}`);
+          }
+          return headers;
+        },
+      })(args, api, extraOptions);
+    } else {
+      return mockBaseQuery(args);
+    }
+  },
   tagTypes: ['Appointment'],
   endpoints: (builder) => ({
     getAppointments: builder.query({
@@ -18,6 +127,10 @@ export const appointmentApi = createApi({
         
         return `/appointment?${queryParams.toString()}`;
       },
+      providesTags: ['Appointment'],
+    }),
+    getUserAppointments: builder.query({
+      query: (userId) => `/appointment/user/${userId}`,
       providesTags: ['Appointment'],
     }),
     getAppointmentById: builder.query({
@@ -50,36 +163,27 @@ export const appointmentApi = createApi({
     confirmAppointment: builder.mutation({
       query: (id) => ({
         url: `/appointment/${id}/confirm`,
-        method: 'PUT',
+        method: 'POST',
       }),
-      invalidatesTags: ['Appointment'],
+      invalidatesTags: (result, error, id) => [{ type: 'Appointment', id }],
     }),
     cancelAppointment: builder.mutation({
       query: (id) => ({
         url: `/appointment/${id}/cancel`,
-        method: 'PUT',
+        method: 'POST',
       }),
-      invalidatesTags: ['Appointment'],
-    }),
-    getUserAppointments: builder.query({
-      query: (userId) => `/appointment/user/${userId}`,
-      providesTags: ['Appointment'],
-    }),
-    getPropertyAppointments: builder.query({
-      query: (propertyId) => `/appointment/property/${propertyId}`,
-      providesTags: ['Appointment'],
+      invalidatesTags: (result, error, id) => [{ type: 'Appointment', id }],
     }),
   }),
 });
 
 export const {
   useGetAppointmentsQuery,
+  useGetUserAppointmentsQuery,
   useGetAppointmentByIdQuery,
   useCreateAppointmentMutation,
   useUpdateAppointmentMutation,
   useDeleteAppointmentMutation,
   useConfirmAppointmentMutation,
   useCancelAppointmentMutation,
-  useGetUserAppointmentsQuery,
-  useGetPropertyAppointmentsQuery,
 } = appointmentApi;

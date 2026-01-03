@@ -46,5 +46,11 @@ const userSlice = createSlice({
 // Export the actions
 export const { setUser, logOut, setLoading, setError, updateProfile } = userSlice.actions;
 
+// Export selectors
+export const selectUser = (state) => state.auth.user;
+export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
+export const selectAuthLoading = (state) => state.auth.loading;
+export const selectAuthError = (state) => state.auth.error;
+
 // Export the reducer to be used in the store
 export default userSlice.reducer;
