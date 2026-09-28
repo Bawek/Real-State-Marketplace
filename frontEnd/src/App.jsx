@@ -4,6 +4,7 @@ import './index.css';
 import Home from './pages/Home';
 import About from './pages/About';
 import Policy from './pages/Policy';
+import ContactUs from './pages/ContactUs';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import PropertyDetails from './pages/properties/PropertyDetails';
@@ -12,17 +13,13 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import UserDashboard from './pages/dashboard/UserDashboard';
 import Notification from './components/Notification';
-import DemoBanner from './components/common/DemoBanner';
 
 function App() {
   return (
     <div className="min-h-screen w-full flex flex-col">
-      {/* Demo Banner */}
-      <DemoBanner />
-      
-      {/* Navbar Section */}
+      {/* Navbar */}
       <Navbar />
-      
+
       {/* Main Content */}
       <main className="flex-grow">
         <Routes>
@@ -33,13 +30,14 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<ContactUs />} />
           <Route path="/policy" element={<Policy />} />
         </Routes>
       </main>
 
-      {/* Footer Section */}
+      {/* Footer */}
       <Footer />
-      
+
       {/* Global Notifications */}
       <Notification />
     </div>

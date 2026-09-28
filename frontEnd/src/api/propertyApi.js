@@ -13,8 +13,8 @@ const isBackendAvailable = async () => {
 
 // Mock base query for when backend is not available
 const mockBaseQuery = async (args) => {
-  await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
-  
+  await new Promise(resolve => setTimeout(resolve, 400)); // Simulate network delay
+
   if (args.url === '/' || args.url.startsWith('/?')) {
     const params = new URLSearchParams(args.url.split('?')[1] || '');
     const page = parseInt(params.get('page')) || 1;
@@ -25,52 +25,78 @@ const mockBaseQuery = async (args) => {
     const maxPrice = params.get('maxPrice') || '';
     const bedrooms = params.get('bedrooms') || '';
     const bathrooms = params.get('bathrooms') || '';
-    
+    const listingType = params.get('listingType') || '';
+    const sortBy = params.get('sortBy') || 'createdAt';
+    const sortOrder = params.get('sortOrder') || 'desc';
+
     let filteredProperties = [...mockProperties];
-    
+
     // Apply filters
     if (location) {
-      filteredProperties = filteredProperties.filter(p => 
-        p.location.toLowerCase().includes(location.toLowerCase())
-      );
+      filteredProperties = filteredProperties.filter(p => {
+        const loc = typeof p.location === 'string' ? p.location : `${p.location?.city} ${p.location?.zone} ${p.location?.address}`;
+        return loc.toLowerCase().includes(location.toLowerCase()) ||
+          p.title.toLowerCase().includes(location.toLowerCase());
+      });
     }
-    
+
     if (type) {
-      filteredProperties = filteredProperties.filter(p => p.type === type);
+      filteredProperties = filteredProperties.filter(p => {
+        const typeName = p.type?.name || p.type || '';
+        return typeName.toLowerCase() === type.toLowerCase();
+      });
     }
-    
+
+    if (listingType) {
+      filteredProperties = filteredProperties.filter(p => p.listingType === listingType);
+    }
+
     if (minPrice) {
       filteredProperties = filteredProperties.filter(p => p.price >= parseInt(minPrice));
     }
-    
+
     if (maxPrice) {
       filteredProperties = filteredProperties.filter(p => p.price <= parseInt(maxPrice));
     }
-    
+
     if (bedrooms) {
-      filteredProperties = filteredProperties.filter(p => p.bedrooms >= parseInt(bedrooms));
+      filteredProperties = filteredProperties.filter(p => (p.bedrooms || 0) >= parseInt(bedrooms));
     }
-    
+
     if (bathrooms) {
-      filteredProperties = filteredProperties.filter(p => p.bathrooms >= parseInt(bathrooms));
+      filteredProperties = filteredProperties.filter(p => (p.bathrooms || 0) >= parseInt(bathrooms));
     }
-    
-    return {
-      data: createMockPropertyResponse(filteredProperties, page, limit)
-    };
+
+    // Sorting
+    filteredProperties.sort((a, b) => {
+      let aVal = a[sortBy];
+      let bVal = b[sortBy];
+      if (sortBy === 'createdAt') { aVal = new Date(aVal); bVal = new Date(bVal); }
+      if (sortOrder === 'asc') return aVal > bVal ? 1 : -1;
+      return aVal < bVal ? 1 : -1;
+    });
+
+    return { data: createMockPropertyResponse(filteredProperties, page, limit) };
   }
-  
+
+  // Featured
+  if (args.url === '/featured') {
+    const featured = mockProperties.filter(p => p.featured && p.status === 'available').slice(0, 6);
+    return { data: { properties: featured } };
+  }
+
+  // Stats
+  if (args.url === '/stats') {
+    return { data: { total: mockProperties.length, available: mockProperties.filter(p => p.status === 'available').length, sold: 0, rented: 0, avgPrice: Math.round(mockProperties.reduce((a, p) => a + p.price, 0) / mockProperties.length) } };
+  }
+
   if (args.url.startsWith('/')) {
-    const id = args.url.split('/')[1];
+    const id = args.url.split('/')[1].split('?')[0];
     const property = mockProperties.find(p => p._id === id);
-    
-    if (property) {
-      return { data: property };
-    } else {
-      return { error: { status: 404, data: { message: 'Property not found' } } };
-    }
+    if (property) return { data: { ...property, views: (property.views || 0) + 1 } };
+    return { error: { status: 404, data: { message: 'Property not found' } } };
   }
-  
+
   return { error: { status: 404, data: { message: 'Endpoint not found' } } };
 };
 
@@ -107,10 +133,21 @@ export const propertyApi = createApi({
         if (params.type) queryParams.append('type', params.type);
         if (params.bedrooms) queryParams.append('bedrooms', params.bedrooms);
         if (params.bathrooms) queryParams.append('bathrooms', params.bathrooms);
-        
+        if (params.listingType) queryParams.append('listingType', params.listingType);
+        if (params.sortBy) queryParams.append('sortBy', params.sortBy);
+        if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
+        if (params.userId) queryParams.append('userId', params.userId);
+        if (params.featured) queryParams.append('featured', params.featured);
         return `/?${queryParams.toString()}`;
       },
       providesTags: ['Property'],
+    }),
+    getFeaturedProperties: builder.query({
+      query: () => '/featured',
+      providesTags: ['Property'],
+    }),
+    getPropertyStats: builder.query({
+      query: () => '/stats',
     }),
     getPropertyById: builder.query({
       query: (id) => `/${id}`,
@@ -152,6 +189,8 @@ export const propertyApi = createApi({
 export const {
   useGetPropertiesQuery,
   useGetPropertyByIdQuery,
+  useGetFeaturedPropertiesQuery,
+  useGetPropertyStatsQuery,
   useCreatePropertyMutation,
   useUpdatePropertyMutation,
   useDeletePropertyMutation,

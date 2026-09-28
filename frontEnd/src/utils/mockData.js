@@ -3,113 +3,208 @@ export const mockProperties = [
   {
     _id: '1',
     title: 'Modern 3-Bedroom House in Suburbs',
-    description: 'Beautiful modern house with spacious living areas, perfect for families. Located in a quiet neighborhood with excellent schools nearby.',
-    type: 'house',
-    location: 'New York, NY',
+    description: 'Beautiful modern house with spacious living areas, perfect for families. Located in a quiet neighborhood with excellent schools nearby. Features an open-plan kitchen, hardwood floors, and a landscaped backyard.',
+    type: { _id: 't1', name: 'House' },
+    location: { city: 'New York', zone: 'Brooklyn', address: '245 Oak Street' },
     price: 450000,
+    listingType: 'sale',
     bedrooms: 3,
     bathrooms: 2,
     area: 1800,
+    parkingSpaces: 2,
+    yearBuilt: 2019,
     featured: true,
+    status: 'available',
+    isFurnished: false,
+    features: ['Swimming Pool', 'Garden', 'Garage', 'Central AC', 'Solar Panels', 'Smart Home'],
     images: [
-      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800',
-      'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800'
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80',
+      'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&q=80',
+      'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=800&q=80',
     ],
     views: 1250,
-    createdAt: '2024-01-15T10:00:00Z'
+    createdAt: '2024-01-15T10:00:00Z',
+    ownerId: { _id: 'u1', username: 'Sarah M.', email: 'sarah@estatehub.com', photo: null },
   },
   {
     _id: '2',
     title: 'Luxury Downtown Apartment',
-    description: 'Stunning apartment with city views, modern amenities, and walking distance to restaurants and shopping.',
-    type: 'apartment',
-    location: 'Los Angeles, CA',
-    price: 750000,
+    description: 'Stunning apartment with city views, modern amenities, and walking distance to restaurants and shopping. Floor-to-ceiling windows, premium kitchen, and rooftop access.',
+    type: { _id: 't2', name: 'Apartment' },
+    location: { city: 'Los Angeles', zone: 'Downtown', address: '88 Wilshire Blvd' },
+    price: 4200,
+    listingType: 'rent',
     bedrooms: 2,
     bathrooms: 2,
     area: 1200,
+    parkingSpaces: 1,
+    yearBuilt: 2022,
     featured: true,
+    status: 'available',
+    isFurnished: true,
+    features: ['Rooftop Pool', 'Gym', 'Concierge', '24/7 Security', 'Pet Friendly', 'EV Charging'],
     images: [
-      'https://images.unsplash.com/photo-1512917770080-f771ee6dfe28?w=800',
-      'https://images.unsplash.com/photo-1445069942587-0bb0e9368214?w=800'
+      'https://images.unsplash.com/photo-1512917770080-f771ee6dfe28?w=800&q=80',
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80',
     ],
     views: 890,
-    createdAt: '2024-01-14T14:30:00Z'
+    createdAt: '2024-01-14T14:30:00Z',
+    ownerId: { _id: 'u2', username: 'James K.', email: 'james@estatehub.com', photo: null },
   },
   {
     _id: '3',
-    title: 'Cozy Starter Home',
-    description: 'Perfect first home with great potential for customization. Large backyard and recently renovated kitchen.',
-    type: 'house',
-    location: 'Chicago, IL',
+    title: 'Cozy Starter Home with Garden',
+    description: 'Perfect first home with great potential for customization. Large backyard, recently renovated kitchen with granite countertops, and a charming front porch.',
+    type: { _id: 't1', name: 'House' },
+    location: { city: 'Chicago', zone: 'Lincoln Park', address: '412 Elm Ave' },
     price: 285000,
+    listingType: 'sale',
     bedrooms: 2,
     bathrooms: 1,
     area: 1100,
+    parkingSpaces: 1,
+    yearBuilt: 2010,
     featured: false,
+    status: 'available',
+    isFurnished: false,
+    features: ['Garden', 'Basement', 'New Kitchen', 'Wood Fireplace'],
     images: [
-      'https://images.unsplash.com/photo-1571066811602-716837a68180?w=800'
+      'https://images.unsplash.com/photo-1571066811602-716837a68180?w=800&q=80',
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
     ],
     views: 650,
-    createdAt: '2024-01-13T09:15:00Z'
+    createdAt: '2024-01-13T09:15:00Z',
+    ownerId: { _id: 'u3', username: 'Lena B.', email: 'lena@estatehub.com', photo: null },
   },
   {
     _id: '4',
-    title: 'Beachfront Condo',
-    description: 'Oceanfront property with breathtaking views, private beach access, and luxury amenities.',
-    type: 'condo',
-    location: 'Miami, FL',
+    title: 'Beachfront Luxury Condo',
+    description: 'Oceanfront property with breathtaking views, private beach access, and luxury amenities. Open-concept living, chef\'s kitchen, and wraparound balcony.',
+    type: { _id: 't3', name: 'Condo' },
+    location: { city: 'Miami', zone: 'South Beach', address: '1 Ocean Drive' },
     price: 1200000,
+    listingType: 'sale',
     bedrooms: 3,
     bathrooms: 3,
     area: 2000,
+    parkingSpaces: 2,
+    yearBuilt: 2020,
     featured: true,
+    status: 'available',
+    isFurnished: true,
+    features: ['Private Beach', 'Infinity Pool', 'Spa', 'Wine Cellar', 'Smart Home', 'Butler Service'],
     images: [
-      'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800'
+      'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80',
+      'https://images.unsplash.com/photo-1584738766473-61c083514bf4?w=800&q=80',
     ],
     views: 2100,
-    createdAt: '2024-01-12T16:45:00Z'
+    createdAt: '2024-01-12T16:45:00Z',
+    ownerId: { _id: 'u4', username: 'David Y.', email: 'david@estatehub.com', photo: null },
   },
   {
     _id: '5',
-    title: 'Historic Townhouse',
-    description: 'Charming historic townhouse with original character, modern updates, and great location.',
-    type: 'townhouse',
-    location: 'Boston, MA',
+    title: 'Historic Brownstone Townhouse',
+    description: 'Charming historic townhouse with original character, modern updates, and great location near parks, cafes, and transit. Private terrace and parking included.',
+    type: { _id: 't4', name: 'Townhouse' },
+    location: { city: 'Boston', zone: 'Back Bay', address: '67 Commonwealth Ave' },
     price: 580000,
+    listingType: 'sale',
     bedrooms: 3,
     bathrooms: 2,
     area: 1600,
+    parkingSpaces: 1,
+    yearBuilt: 1920,
     featured: false,
+    status: 'available',
+    isFurnished: false,
+    features: ['Terrace', 'Original Hardwood', 'Exposed Brick', 'Bay Windows', 'Central Heating'],
     images: [
-      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800'
+      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=80',
     ],
     views: 980,
-    createdAt: '2024-01-11T11:20:00Z'
+    createdAt: '2024-01-11T11:20:00Z',
+    ownerId: { _id: 'u1', username: 'Sarah M.', email: 'sarah@estatehub.com', photo: null },
   },
   {
     _id: '6',
-    title: 'Mountain View Villa',
-    description: 'Luxury villa with stunning mountain views, infinity pool, and premium finishes throughout.',
-    type: 'villa',
-    location: 'Denver, CO',
+    title: 'Mountain View Luxury Villa',
+    description: 'Exceptional luxury villa with stunning mountain views, infinity pool, private gym, and premium finishes. Fully gated with smart home technology throughout.',
+    type: { _id: 't5', name: 'Villa' },
+    location: { city: 'Denver', zone: 'Cherry Hills', address: '500 Summit Drive' },
     price: 2500000,
+    listingType: 'sale',
     bedrooms: 5,
     bathrooms: 4,
     area: 3500,
+    parkingSpaces: 3,
+    yearBuilt: 2021,
     featured: true,
+    status: 'available',
+    isFurnished: true,
+    features: ['Infinity Pool', 'Private Gym', 'Cinema Room', 'Wine Cellar', 'Mountain Views', 'Smart Home', 'Helipad'],
     images: [
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800'
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80',
     ],
     views: 3200,
-    createdAt: '2024-01-10T13:30:00Z'
-  }
+    createdAt: '2024-01-10T13:30:00Z',
+    ownerId: { _id: 'u2', username: 'James K.', email: 'james@estatehub.com', photo: null },
+  },
+  {
+    _id: '7',
+    title: 'Studio Apartment in City Center',
+    description: 'Sleek studio in the heart of the city — perfect for young professionals. Fully furnished, high-speed WiFi included, and minutes from top restaurants.',
+    type: { _id: 't2', name: 'Apartment' },
+    location: { city: 'San Francisco', zone: 'SoMa', address: '300 Market Street' },
+    price: 2800,
+    listingType: 'rent',
+    bedrooms: 0,
+    bathrooms: 1,
+    area: 550,
+    parkingSpaces: 0,
+    yearBuilt: 2018,
+    featured: false,
+    status: 'available',
+    isFurnished: true,
+    features: ['WiFi Included', 'Gym Access', 'Rooftop', 'Doorman'],
+    images: [
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80',
+    ],
+    views: 540,
+    createdAt: '2024-01-09T08:00:00Z',
+    ownerId: { _id: 'u3', username: 'Lena B.', email: 'lena@estatehub.com', photo: null },
+  },
+  {
+    _id: '8',
+    title: 'Family Home with Pool in Suburbs',
+    description: 'Spacious family home in a top school district with a private pool, sunroom, and large garden. Updated bathrooms, open kitchen, and 3-car garage.',
+    type: { _id: 't1', name: 'House' },
+    location: { city: 'Austin', zone: 'Westlake', address: '120 Lakewood Trail' },
+    price: 720000,
+    listingType: 'sale',
+    bedrooms: 4,
+    bathrooms: 3,
+    area: 2600,
+    parkingSpaces: 3,
+    yearBuilt: 2015,
+    featured: false,
+    status: 'available',
+    isFurnished: false,
+    features: ['Private Pool', 'Sunroom', '3-Car Garage', 'Large Garden', 'Central AC', 'Solar Ready'],
+    images: [
+      'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&q=80',
+    ],
+    views: 1580,
+    createdAt: '2024-01-08T14:00:00Z',
+    ownerId: { _id: 'u4', username: 'David Y.', email: 'david@estatehub.com', photo: null },
+  },
 ];
 
 export const mockUser = {
   _id: 'user123',
-  name: 'John Doe',
-  email: 'john.doe@example.com',
+  name: 'Alex Johnson',
+  username: 'alex_j',
+  email: 'alex@example.com',
   role: 'user',
   token: 'mock-jwt-token-12345'
 };
@@ -117,59 +212,41 @@ export const mockUser = {
 export const mockAppointments = [
   {
     _id: 'apt1',
-    propertyId: {
-      _id: '1',
-      title: 'Modern 3-Bedroom House in Suburbs'
-    },
-    agentId: {
-      _id: 'agent1',
-      name: 'Sarah Johnson'
-    },
-    date: '2024-02-01T14:00:00Z',
+    propertyId: { _id: '1', title: 'Modern 3-Bedroom House in Suburbs' },
+    agentId: { _id: 'agent1', name: 'Sarah Mitchell' },
+    date: new Date(Date.now() + 86400000 * 3).toISOString(),
     time: '2:00 PM',
     status: 'confirmed',
-    notes: 'Client interested in viewing the property'
+    notes: 'Client interested in viewing the property',
   },
   {
     _id: 'apt2',
-    propertyId: {
-      _id: '2',
-      title: 'Luxury Downtown Apartment'
-    },
-    agentId: {
-      _id: 'agent2',
-      name: 'Mike Wilson'
-    },
-    date: '2024-02-03T10:30:00Z',
+    propertyId: { _id: '2', title: 'Luxury Downtown Apartment' },
+    agentId: { _id: 'agent2', name: 'James Okafor' },
+    date: new Date(Date.now() + 86400000 * 7).toISOString(),
     time: '10:30 AM',
     status: 'pending',
-    notes: 'Schedule for weekend viewing'
-  }
+    notes: 'Weekend viewing requested',
+  },
 ];
 
 export const mockMessages = [
   {
     _id: 'msg1',
-    sender: {
-      _id: 'agent1',
-      name: 'Sarah Johnson'
-    },
+    sender: { _id: 'agent1', name: 'Sarah Mitchell' },
     receiver: 'user123',
-    content: 'Hi! I saw you\'re interested in the property. Would you like to schedule a viewing?',
-    timestamp: '2024-01-20T10:15:00Z',
-    read: false
+    content: 'Hi! I saw you\'re interested in the property. Would you like to schedule a viewing this weekend?',
+    timestamp: new Date(Date.now() - 3600000 * 2).toISOString(),
+    read: false,
   },
   {
     _id: 'msg2',
-    sender: {
-      _id: 'agent2',
-      name: 'Mike Wilson'
-    },
+    sender: { _id: 'agent2', name: 'James Okafor' },
     receiver: 'user123',
-    content: 'The apartment is still available. Let me know if you have any questions.',
-    timestamp: '2024-01-19T15:30:00Z',
-    read: true
-  }
+    content: 'The apartment is still available. I can arrange a private showing at your convenience.',
+    timestamp: new Date(Date.now() - 3600000 * 24).toISOString(),
+    read: true,
+  },
 ];
 
 // Mock API response structure
@@ -177,13 +254,13 @@ export const createMockPropertyResponse = (properties, page = 1, limit = 12) => 
   const startIndex = (page - 1) * limit;
   const endIndex = startIndex + limit;
   const paginatedProperties = properties.slice(startIndex, endIndex);
-  
+
   return {
     properties: paginatedProperties,
     currentPage: page,
     totalPages: Math.ceil(properties.length / limit),
     totalProperties: properties.length,
     hasNextPage: endIndex < properties.length,
-    hasPrevPage: page > 1
+    hasPrevPage: page > 1,
   };
 };
